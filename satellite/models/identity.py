@@ -1,4 +1,6 @@
 from mongoengine import *
+from werkzeug.security import safe_str_cmp
+from satellite.security import entropy
 import datetime
 import hashlib
 
@@ -23,9 +25,27 @@ class User(Document):
     
     password = StringField(max_length = 256, required = True)
     
+    salt = StringField(max_length = 17, required = True)
+    
     date_modified = DateTimeField(default=datetime.datetime.now)
     
+    meta = {
+        'indexes': [
+            'username',
+            'email'
+        ]
+    }
+    
     claims = []
+    
+   
+    # --------------------------------------------------------------------------
+    # METHOD __SALT_PASSWORD
+    # --------------------------------------------------------------------------  
+    # Appends a randomly generated value at the end of the password to protect
+    # against dictionary attacks
+    def __salt_password(self, password):
+        return ''.join([password, self.salt])
     
     # --------------------------------------------------------------------------
     # CLASS CONSTRUCTOR 
@@ -37,7 +57,8 @@ class User(Document):
         self.lastname = lastname
         self.email = email
         self.username = username
-        self.password = hashlib.sha256(password).hexdigest()
+        self.salt = gen_salt(length = 17)
+        self.password = hashlib.sha256(__salt_pass(password)).hexdigest()
 
     # --------------------------------------------------------------------------
     # METHOD STR
@@ -46,19 +67,17 @@ class User(Document):
     def __str__(self):
         return "User(username='%s')" % self.username
         
-    
     # --------------------------------------------------------------------------
     # METHOD IS_AUTHORIZED_TO
     # --------------------------------------------------------------------------
     def is_authorized_to(self, action):
         return action in self.claims
         
-    
     # --------------------------------------------------------------------------
     # METHOD ADD_CLAIM
     # --------------------------------------------------------------------------
     def add_claim(self, claim):
-        if claim not in self.claims
+        if claim not in self.claims:
             self.claims.append(claim)
         return
     
@@ -67,3 +86,9 @@ class User(Document):
     # --------------------------------------------------------------------------
     def update_password(self, password):
         self.password = hashlib.sha256(password).hexdigest()
+        
+    # --------------------------------------------------------------------------
+    # METHOD AUTHENTICATE
+    # --------------------------------------------------------------------------
+    def authenticate(self, password):
+        return safe_str_cmp(self.password.encode('utf-8'), password.encode('utf-8'))
