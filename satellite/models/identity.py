@@ -1,5 +1,6 @@
 from mongoengine import *
 import datetime
+import hashlib
 
 
 # ------------------------------------------------------------------------------
@@ -36,14 +37,14 @@ class User(Document):
         self.lastname = lastname
         self.email = email
         self.username = username
-        self.password = password
+        self.password = hashlib.sha256(password).hexdigest()
 
     # --------------------------------------------------------------------------
     # METHOD STR
     # --------------------------------------------------------------------------
     # Creates a string representation of a user
     def __str__(self):
-        return "User(id='%s')" % self.id
+        return "User(username='%s')" % self.username
         
     
     # --------------------------------------------------------------------------
@@ -60,3 +61,9 @@ class User(Document):
         if claim not in self.claims
             self.claims.append(claim)
         return
+    
+    # --------------------------------------------------------------------------
+    # METHOD UPDATE PASSWORD
+    # --------------------------------------------------------------------------
+    def update_password(self, password):
+        self.password = hashlib.sha256(password).hexdigest()
