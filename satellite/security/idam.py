@@ -4,6 +4,7 @@ from mongoengine import *
 # ------------------------------------------------------------------------------
 # IDENTITY AND ACCESS MANAGEMENT SCRIPTS                                        
 # ------------------------------------------------------------------------------
+# This section provides scripts needed by 
 
 
 # ------------------------------------------------------------------------------
@@ -20,10 +21,11 @@ def authenticate(username, password):
         else:
             return None
     except DoesNotExist:
+        app.logger.warning('A logging attempt of non-existing user: %d occured.', username)
         return None
     except MultipleObjectsReturned:
+        app.logger.error('The username: %d has more than 1 match in database. Urgent revision required. Integrity failed', username)
         return None
-
 
 # ------------------------------------------------------------------------------
 # FUNCTION IDENTITY                                      
@@ -36,6 +38,8 @@ def identity(payload):
         user = User.objects.get(username = user_id)
         return user
     except DoesNotExist:
+        app.logger.warning('A retrieval attempt of non-existing user: %d occured.', username)
         return None
     except MultipleObjectsReturned:
+        app.logger.error('The username: %d has more than 1 match in database. Urgent revision required. Integrity failed', username)
         return None

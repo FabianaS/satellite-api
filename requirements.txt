@@ -17,6 +17,7 @@ chardet==2.0.1
 click==6.7
 colorama==0.2.5
 configobj==4.7.2
+contextlib2==0.5.5
 decorator==3.4.0
 duplicity==0.6.23
 flask-mongoengine==0.9.3
@@ -46,6 +47,7 @@ pyparsing==2.0.1
 python-apt==0.9.3.5ubuntu2
 python-dateutil==1.5
 pytz==2012c
+raven==6.1.0
 requests==2.2.1
 scipy==0.13.3
 simplegeneric==0.8.1
