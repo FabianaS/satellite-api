@@ -19,6 +19,7 @@ def authenticate(username, password):
         if user and user.authenticate(username, password):
             return user
         else:
+            app.logger.warning('User: %d attempted to login using invalid credentials.', username)
             return None
     except DoesNotExist:
         app.logger.warning('A logging attempt of non-existing user: %d occured.', username)
