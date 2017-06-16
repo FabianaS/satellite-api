@@ -19,9 +19,9 @@ class User(Document):
     
     lastname = StringField(max_length = 120, required = True)
     
-    email = StringField(max_length = 120, required = True)
+    email = StringField(max_length = 120, required = True, unique=True)
     
-    username = StringField(max_length = 120, required = True)
+    username = StringField(max_length = 120, required = True, unique=True)
     
     password = StringField(max_length = 256, required = True)
     
@@ -46,6 +46,14 @@ class User(Document):
     # against dictionary attacks
     def __salt_password(self, password):
         return ''.join([password, self.salt])
+        
+    # --------------------------------------------------------------------------
+    # METHOD __COMPUTE_HASH
+    # -------------------------------------------------------------------------- 
+    # Computes the SHA256 hash of the given password and encodes the result into
+    # a hexadecimal string.
+    def __compute_hash(self, password):
+        return hashlib.sha256(__salt_password(password)).hexdigest()
     
     # --------------------------------------------------------------------------
     # CLASS CONSTRUCTOR 
@@ -58,7 +66,7 @@ class User(Document):
         self.email = email
         self.username = username
         self.salt = gen_salt(length = 17)
-        self.password = hashlib.sha256(__salt_pass(password)).hexdigest()
+        self.password = __compute_hash(password)
 
     # --------------------------------------------------------------------------
     # METHOD STR
@@ -91,4 +99,5 @@ class User(Document):
     # METHOD AUTHENTICATE
     # --------------------------------------------------------------------------
     def authenticate(self, password):
-        return safe_str_cmp(self.password.encode('utf-8'), password.encode('utf-8'))
+        challenge = __compute_hash(password)
+        return safe_str_cmp(self.password.encode('utf-8'), challenge.encode('utf-8'))

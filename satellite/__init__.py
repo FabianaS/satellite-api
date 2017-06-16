@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_mongoengine import MongoEngine
-
+from flask_jwt import JWT
 # ------------------------------------------------------------------------------
 # SETUP JWT AUTHENTICATION
 # ------------------------------------------------------------------------------
@@ -22,3 +22,6 @@ db = MongoEngine(app)
 
 # Import all satellite controller files
 from satellite.controllers import *
+from satellite.security.idam import *
+
+jwt = JWT(app, authenticate, identity)

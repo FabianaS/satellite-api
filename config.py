@@ -8,7 +8,7 @@ MAIL_FROM_EMAIL = "info@boilerplateapp.com"
 # Its also used by extensions like Flask-Bcrypt. You should
 # define this in your instance folder to keep it out of version
 # control.
-SECRET_KEY = '!(q5W&V9zQ?jF<'
+SECRET_KEY = '!(q5W&V9zQ?jF<' # Change for production
 #
 # Configuration for the Flask-Bcrypt extension
 BCRYPT_LEVEL = 12
