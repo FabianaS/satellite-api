@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+from satellite import app
 from satellite.models.identity import User
 from mongoengine import *
 
@@ -15,9 +18,11 @@ from mongoengine import *
 def authenticate(username, password):
     user = None
     try:
-        user = User.objects.get(username = username)
-        if user and user.authenticate(username, password):
-            return user
+        user = User.objects.get(username=username)
+        if user and user.authenticate(password=password):
+            app.logger.warning('Authenticated user: %d with correct credentials.', username)
+            return {"id": user.id, "user_id": user.user_id, "email": user.email, "name": user.name,
+                    "last_name": user.last_name}
         else:
             app.logger.warning('User: %d attempted to login using invalid credentials.', username)
             return None
@@ -25,7 +30,8 @@ def authenticate(username, password):
         app.logger.warning('A logging attempt of non-existing user: %d occured.', username)
         return None
     except MultipleObjectsReturned:
-        app.logger.error('The username: %d has more than 1 match in database. Urgent revision required. Integrity failed', username)
+        app.logger.error('The username: %d has more than 1 match in database. Urgent revision required. Integrity failed',
+                         username)
         return None
 
 

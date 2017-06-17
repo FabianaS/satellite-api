@@ -1,8 +1,9 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 from mongoengine import *
 from werkzeug.security import safe_str_cmp
-from satellite.security import entropy
+from satellite.security.entropy import gen_salt, compute_hash
 import datetime
-import hashlib
 
 
 # ------------------------------------------------------------------------------
@@ -14,7 +15,9 @@ class User(Document):
     # --------------------------------------------------------------------------
     # USER PROPERTIES
     # --------------------------------------------------------------------------
-    
+
+    user_id = StringField(max_length=40, required=True)
+
     name = StringField(max_length=120, required=True)
     
     last_name = StringField(max_length=120, required=True)
@@ -25,48 +28,17 @@ class User(Document):
     
     password = StringField(max_length=256, required=True)
     
-    salt = StringField(max_length=17, required=True)
+    salt = StringField(max_length=17, required=True, default=gen_salt(17))
     
     date_modified = DateTimeField(default=datetime.datetime.now)
     
     meta = {
         'indexes': [
-            'id',
+            'user_id',
             'username',
             'email'
         ]
     }
-    
-    claims = []
-
-    # --------------------------------------------------------------------------
-    # METHOD __SALT_PASSWORD
-    # --------------------------------------------------------------------------  
-    # Appends a randomly generated value at the end of the password to protect
-    # against dictionary attacks
-    def __salt_password(self, password):
-        return ''.join([password, self.salt])
-
-    # --------------------------------------------------------------------------
-    # METHOD __COMPUTE_HASH
-    # -------------------------------------------------------------------------- 
-    # Computes the SHA256 hash of the given password and encodes the result into
-    # a hexadecimal string.
-    def __compute_hash(self, password):
-        return hashlib.sha256(__salt_password(password)).hexdigest()
-    
-    # --------------------------------------------------------------------------
-    # CLASS CONSTRUCTOR 
-    # --------------------------------------------------------------------------
-    # Creates instances of User.
-    def __init__(self, user_id, name, last_name, email, username, password):
-        self.id = user_id
-        self.name = name
-        self.last_name = last_name
-        self.email = email
-        self.username = username
-        self.salt = gen_salt(length = 17)
-        self.password = __compute_hash(password)
 
     # --------------------------------------------------------------------------
     # METHOD STR
@@ -93,11 +65,11 @@ class User(Document):
     # METHOD UPDATE PASSWORD
     # --------------------------------------------------------------------------
     def update_password(self, password):
-        self.password = hashlib.sha256(password).hexdigest()
+        self.password = compute_hash(password, self.salt)
         
     # --------------------------------------------------------------------------
     # METHOD AUTHENTICATE
     # --------------------------------------------------------------------------
     def authenticate(self, password):
-        challenge = __compute_hash(password)
+        challenge = compute_hash(password, self.salt)
         return safe_str_cmp(self.password.encode('utf-8'), challenge.encode('utf-8'))

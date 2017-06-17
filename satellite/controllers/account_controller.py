@@ -1,5 +1,5 @@
 from satellite import app
-from flask import request
+from flask import request, jsonify
 from satellite.models.identity import User
 from flask_jwt import jwt_required, current_identity
 import uuid
@@ -20,9 +20,8 @@ def post_account():
             last_name=user_data['last_name'],
             email=user_data['email'],
             username=user_data['username'],
-            password=user_data['password']
+            password=None
             )
+        user.update_password(user_data['password'])
         user.save(validate=True)
-    return 200
-
-''
+    return jsonify({"user_id": user.user_id}), 200
