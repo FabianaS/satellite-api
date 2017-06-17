@@ -28,6 +28,7 @@ def authenticate(username, password):
         app.logger.error('The username: %d has more than 1 match in database. Urgent revision required. Integrity failed', username)
         return None
 
+
 # ------------------------------------------------------------------------------
 # FUNCTION IDENTITY                                      
 # ------------------------------------------------------------------------------

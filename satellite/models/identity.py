@@ -15,30 +15,30 @@ class User(Document):
     # USER PROPERTIES
     # --------------------------------------------------------------------------
     
-    name = StringField(max_length = 120, required = True)
+    name = StringField(max_length=120, required=True)
     
-    lastname = StringField(max_length = 120, required = True)
+    last_name = StringField(max_length=120, required=True)
     
-    email = StringField(max_length = 120, required = True, unique=True)
+    email = StringField(max_length=120, required=True, unique=True)
     
-    username = StringField(max_length = 120, required = True, unique=True)
+    username = StringField(max_length=120, required=True, unique=True)
     
-    password = StringField(max_length = 256, required = True)
+    password = StringField(max_length=256, required=True)
     
-    salt = StringField(max_length = 17, required = True)
+    salt = StringField(max_length=17, required=True)
     
     date_modified = DateTimeField(default=datetime.datetime.now)
     
     meta = {
         'indexes': [
+            'id',
             'username',
             'email'
         ]
     }
     
     claims = []
-    
-   
+
     # --------------------------------------------------------------------------
     # METHOD __SALT_PASSWORD
     # --------------------------------------------------------------------------  
@@ -46,7 +46,7 @@ class User(Document):
     # against dictionary attacks
     def __salt_password(self, password):
         return ''.join([password, self.salt])
-        
+
     # --------------------------------------------------------------------------
     # METHOD __COMPUTE_HASH
     # -------------------------------------------------------------------------- 
@@ -58,11 +58,11 @@ class User(Document):
     # --------------------------------------------------------------------------
     # CLASS CONSTRUCTOR 
     # --------------------------------------------------------------------------
-    # Creats instances of User. 
-    def __init__(self, id, name, lastname, email, username, password):
-        self.id = id
+    # Creates instances of User.
+    def __init__(self, user_id, name, last_name, email, username, password):
+        self.id = user_id
         self.name = name
-        self.lastname = lastname
+        self.last_name = last_name
         self.email = email
         self.username = username
         self.salt = gen_salt(length = 17)
