@@ -1,6 +1,6 @@
 from satellite import app
 from flask import request, jsonify
-from satellite.models.identity import User
+from satellite.models.account import User
 from flask_jwt import jwt_required, current_identity
 import uuid
 
@@ -26,3 +26,13 @@ def post_account():
         user.save(validate=True)
         app.logger.info('User %s was created', user.user_id)
     return jsonify({"user_id": user.user_id}), 200
+
+
+# --------------------------------------------------------------------------
+# GET ACCOUNT
+# --------------------------------------------------------------------------
+# Gets the account information associated with current session in the system
+@app.route('/api/v1/account', methods=['GET'])
+@jwt_required()
+def get_account():
+    return current_identity.as_json(), 200

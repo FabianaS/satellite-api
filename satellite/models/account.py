@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 from mongoengine import *
 from werkzeug.security import safe_str_cmp
+from flask import jsonify
 from satellite.security.entropy import gen_salt, compute_hash
 import datetime
 
@@ -9,14 +10,29 @@ import datetime
 # ------------------------------------------------------------------------------
 # CLASS IDENTITY
 # ------------------------------------------------------------------------------
-class Identity:
+class SessionIdentity:
 
+    # --------------------------------------------------------------------------
+    # CONSTRUCTOR METHOD
+    # --------------------------------------------------------------------------
     def __init__(self, id, username, name, last_name, email):
         self.id = id
         self.username = username
         self.name = name
         self.last_name = last_name
         self.email = email
+
+    # --------------------------------------------------------------------------
+    # METHOD STR
+    # --------------------------------------------------------------------------
+    def as_json(self):
+        return jsonify({
+            "id": self.id,
+            "username": self.username,
+            "name": self.name,
+            "last_name": self.last_name,
+            "email": self.email
+        })
 
 
 # ------------------------------------------------------------------------------
@@ -92,8 +108,8 @@ class User(Document):
     # METHOD GET IDENTITY
     # --------------------------------------------------------------------------
     def get_identity(self):
-        return Identity(self.user_id,
-                        self.username,
-                        self.name,
-                        self.last_name,
-                        self.email)
+        return SessionIdentity(self.user_id,
+                               self.username,
+                               self.name,
+                               self.last_name,
+                               self.email)
