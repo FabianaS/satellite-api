@@ -1,3 +1,4 @@
+import datetime
 # Turns on debugging features in Flask
 DEBUG = True
 #
@@ -8,15 +9,16 @@ MAIL_FROM_EMAIL = "info@boilerplateapp.com"
 # Its also used by extensions like Flask-Bcrypt. You should
 # define this in your instance folder to keep it out of version
 # control.
-SECRET_KEY = '!(q5W&V9zQ?jF<' # Change for production
+SECRET_KEY = '!(q5W&V9zQ?jF<'  # Change for production
 #
 # Configuration for the Flask-Bcrypt extension
 BCRYPT_LEVEL = 12
 #
 # ----------------------------------------------------------------
-# SERVER CONFIGURATION
+# JWT CONFIGURATIONS
 # ----------------------------------------------------------------
-PORT = 8087
+JWT_AUTH_URL_RULE = '/api/v1/auth'
+JWT_EXPIRATION_DELTA = datetime.timedelta(3200)
 #
 # ----------------------------------------------------------------
 # SATELLITE DATABASE CONFIGURATION

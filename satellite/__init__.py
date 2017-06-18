@@ -1,3 +1,5 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 import logging
 from logging.handlers import RotatingFileHandler
 from flask import Flask

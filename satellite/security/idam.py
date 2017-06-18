@@ -1,10 +1,14 @@
-from satellite.models.identity import User
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+from satellite import app
+from satellite.models.account import User
 from mongoengine import *
 
 # ------------------------------------------------------------------------------
-# IDENTITY AND ACCESS MANAGEMENT SCRIPTS                                        
+# IDENTITY AND ACCESS MANAGEMENT MODULE
 # ------------------------------------------------------------------------------
-# This section provides scripts needed by 
+# This section provides identity and access management functions and class
+# definitions.
 
 
 # ------------------------------------------------------------------------------
@@ -13,34 +17,32 @@ from mongoengine import *
 # Checks given credential in order to authenticate or deny authentication to the 
 # API. 
 def authenticate(username, password):
-    user = None
     try:
-        user = User.objects.get(username = username)
-        if user and user.authenticate(username, password):
-            return user
+        user = User.objects.get(username=username)
+        if user and user.authenticate(password=password):
+            app.logger.warning('Authenticated user with correct credentials user: '+username)
+            return user.get_identity()
         else:
-            app.logger.warning('User: %d attempted to login using invalid credentials.', username)
-            return None
+            app.logger.warning('User: attempted to login using invalid credentials. ' + username)
     except DoesNotExist:
-        app.logger.warning('A logging attempt of non-existing user: %d occured.', username)
-        return None
+        app.logger.warning('A logging attempt of non-existing user: occurred. ' + username)
     except MultipleObjectsReturned:
-        app.logger.error('The username: %d has more than 1 match in database. Urgent revision required. Integrity failed', username)
-        return None
+        app.logger.error('The username has more than 1 match in database. Urgent revision required. '+username)
+    return None
+
 
 # ------------------------------------------------------------------------------
 # FUNCTION IDENTITY                                      
 # ------------------------------------------------------------------------------
 # Gets the User associated with a given identity
 def identity(payload):
-    user_id = payload['identity']
     user = None
     try:
-        user = User.objects.get(username = user_id)
-        return user
+        user_id = payload['identity']
+        user = User.objects.get(user_id=user_id)
+        return user.get_identity()
     except DoesNotExist:
-        app.logger.warning('A retrieval attempt of non-existing user: %d occured.', username)
-        return None
+        app.logger.warning('A retrieval attempt of non-existing user occurred: ' + user_id)
     except MultipleObjectsReturned:
-        app.logger.error('The username: %d has more than 1 match in database. Urgent revision required. Integrity failed', username)
-        return None
+        app.logger.error('The username has more than 1 match in database. Urgent revision required. '+username)
+    return user
