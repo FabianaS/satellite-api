@@ -7,6 +7,19 @@ import datetime
 
 
 # ------------------------------------------------------------------------------
+# CLASS IDENTITY
+# ------------------------------------------------------------------------------
+class Identity:
+
+    def __init__(self, id, username, name, last_name, email):
+        self.id = id
+        self.username = username
+        self.name = name
+        self.last_name = last_name
+        self.email = email
+
+
+# ------------------------------------------------------------------------------
 # CLASS USER
 # ------------------------------------------------------------------------------
 # Represents a User within the Satellite Identity sub-system. 
@@ -59,6 +72,7 @@ class User(Document):
     def add_claim(self, claim):
         if claim not in self.claims:
             self.claims.append(claim)
+            self.save()
         return
     
     # --------------------------------------------------------------------------
@@ -73,3 +87,13 @@ class User(Document):
     def authenticate(self, password):
         challenge = compute_hash(password, self.salt)
         return safe_str_cmp(self.password.encode('utf-8'), challenge.encode('utf-8'))
+
+    # --------------------------------------------------------------------------
+    # METHOD GET IDENTITY
+    # --------------------------------------------------------------------------
+    def get_identity(self):
+        return Identity(self.user_id,
+                        self.username,
+                        self.name,
+                        self.last_name,
+                        self.email)

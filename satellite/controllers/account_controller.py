@@ -24,4 +24,5 @@ def post_account():
             )
         user.update_password(user_data['password'])
         user.save(validate=True)
+        app.logger.info('User %s was created', user.user_id)
     return jsonify({"user_id": user.user_id}), 200
