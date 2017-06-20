@@ -96,7 +96,17 @@ class User(Document):
     # --------------------------------------------------------------------------
     def update_password(self, password):
         self.password = compute_hash(password, self.salt)
-        
+        self.save()
+        return True
+
+    # --------------------------------------------------------------------------
+    # METHOD UPDATE EMAIL
+    # --------------------------------------------------------------------------
+    def update_email(self, email):
+        self.email = email
+        self.save()
+        return True
+
     # --------------------------------------------------------------------------
     # METHOD AUTHENTICATE
     # --------------------------------------------------------------------------
@@ -113,3 +123,19 @@ class User(Document):
                                self.name,
                                self.last_name,
                                self.email)
+
+
+# ------------------------------------------------------------------------------
+# CLASS USER SERVICE
+# ------------------------------------------------------------------------------
+# Represents a user service that allows easy management of User objects
+class UserService:
+
+    def __init__(self, user_id):
+        self.user_id = user_id
+
+    def get_user(self):
+        user = User.objects.get(user_id=self.user_id)
+        if user:
+            return user
+        return None

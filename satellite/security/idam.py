@@ -36,7 +36,6 @@ def authenticate(username, password):
 # ------------------------------------------------------------------------------
 # Gets the User associated with a given identity
 def identity(payload):
-    user = None
     try:
         user_id = payload['identity']
         user = User.objects.get(user_id=user_id)
@@ -44,5 +43,19 @@ def identity(payload):
     except DoesNotExist:
         app.logger.warning('A retrieval attempt of non-existing user occurred: ' + user_id)
     except MultipleObjectsReturned:
-        app.logger.error('The username has more than 1 match in database. Urgent revision required. '+username)
-    return user
+        app.logger.error('The username has more than 1 match in database. Urgent revision required. '+user_id)
+    return None
+
+
+# ------------------------------------------------------------------------------
+# FIND USER
+# ------------------------------------------------------------------------------
+def find_user(user_id):
+    try:
+        user = User.objects.get(user_id=user_id)
+        return user.get_identity()
+    except DoesNotExist:
+        app.logger.warning('A retrieval attempt of non-existing user occurred: ' + user_id)
+    except MultipleObjectsReturned:
+        app.logger.error('The username has more than 1 match in database. Urgent revision required. ' + user_id)
+    return None
