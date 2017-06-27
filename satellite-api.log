@@ -45,3 +45,5 @@ Invalid json received for user: df5d4da0-671a-4384-a24c-6735d08239bd
 Updated password for user_id: df5d4da0-671a-4384-a24c-6735d08239bd
 Updated email for user_id: df5d4da0-671a-4384-a24c-6735d08239bd
 Updated email for user_id: df5d4da0-671a-4384-a24c-6735d08239bd
+User ceb59b3b-7a74-4a0f-8a32-7fcb6c6cd31e was created
+Authenticated user with correct credentials user: fulgencia@example.com

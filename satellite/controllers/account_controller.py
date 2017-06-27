@@ -87,7 +87,7 @@ def post_account():
             name=user_data['name'],
             last_name=user_data['last_name'],
             email=user_data['email'],
-            username=user_data['username'],
+            username=user_data['email'],
             password=None
             )
         user.update_password(user_data['password'])

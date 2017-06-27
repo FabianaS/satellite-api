@@ -20,7 +20,7 @@ def authenticate(username, password):
     try:
         user = User.objects.get(username=username)
         if user and user.authenticate(password=password):
-            app.logger.warning('Authenticated user with correct credentials user: '+username)
+            app.logger.info('Authenticated user with correct credentials user: '+username)
             return user.get_identity()
         else:
             app.logger.warning('User: attempted to login using invalid credentials. ' + username)
